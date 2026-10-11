@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#ff075b">
+  <meta name="description" content="Organize as finanças, clientes e serviços da MNunes Nails.">
+  <title>MNunes Nails · Finanças</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script type="module" src="/app.js"></script>
+</head>
+<body>
+  <aside class="sidebar">
+    <a class="brand" href="/"><svg viewBox="0 0 64 64" aria-hidden="true"><path fill="#ff075b" d="M32 6C17 17 22 29 32 34C42 29 47 17 32 6Z"/><path fill="#ff71a1" d="M9 24C6 44 18 51 30 53C32 38 23 29 9 24Z"/><path fill="#ff075b" d="M55 24C58 44 46 51 34 53C32 38 41 29 55 24Z"/></svg><strong>MNunesnail Finanças</strong></a>
+    <nav aria-label="Menu principal">
+      <button data-view="dashboard" class="active">⌂ <span>Início</span></button>
+      <button data-view="services">✂ <span>Serviços</span></button>
+      <button data-view="transactions">＄ <span>Receitas e despesas</span></button>
+      <button data-view="clients">♡ <span>Clientes</span></button>
+    </nav>
+    <div class="sidebar-note"><span>Um cuidado com o seu negócio.</span><p>Mais clareza para crescer, um dia de cada vez.</p></div>
+  </aside>
+  <main>
+    <div class="topbar"><span>Seu salão, bem organizado.</span><span class="profile">♙ &nbsp; Proprietário</span></div>
+    <header><div><h1 id="page-title">Olá!</h1><p id="page-description">Veja o resumo financeiro do seu salão.</p></div><button class="primary" id="add-button">+ Novo lançamento</button></header>
+    <div class="toolbar"><span id="period-label">Movimentação do mês</span><label>Mês <input type="month" id="month-filter"></label></div>
+    <p id="notice" role="status" aria-live="polite" hidden></p>
+    <section id="content" aria-label="Conteúdo principal"><p>Carregando seus dados…</p></section>
+    <footer>MNunes Nails <span>Organização que valoriza o seu trabalho.</span></footer>
+  </main>
+  <dialog id="form-dialog" aria-labelledby="dialog-title">
+    <form id="record-form"><div class="dialog-header"><div><h2 id="dialog-title">Novo lançamento</h2><p>Preencha os dados abaixo para organizar seu salão.</p></div><button type="button" id="close-dialog" aria-label="Fechar">×</button></div><div class="form-layout"><div id="form-fields"></div><aside class="form-tip" id="form-tip"></aside></div><p id="form-error" role="alert"></p><div class="form-actions"><button type="button" id="cancel-dialog">× Cancelar</button><button class="primary" type="submit">Salvar</button></div></form>
+  </dialog>
+</body>
+</html>
