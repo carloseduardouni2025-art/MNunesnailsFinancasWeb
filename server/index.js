@@ -41,7 +41,9 @@ export function createApp(db) {
           const result = db.prepare(`DELETE FROM ${resource} WHERE id = ?`).run(Number(id));
           return json(result.changes ? 200 : 404, result.changes ? { success: true } : { error: 'Registro não encontrado' });
         }
-        if (req.method === 'POST' && !id) {
+        const editingService = req.method === 'PUT' && resource === 'services' && id;
+        if ((req.method === 'POST' && !id) || editingService) {
+          if (editingService && !db.prepare('SELECT id FROM services WHERE id = ?').get(Number(id))) return json(404, { error: 'Serviço não encontrado' });
           let raw = '';
           for await (const chunk of req) { raw += chunk; if (Buffer.byteLength(raw) > 16384) return json(413, { error: 'Requisição muito grande' }); }
           let body;
@@ -52,6 +54,10 @@ export function createApp(db) {
             if (resource === 'transactions' && body.client_id !== null && !db.prepare('SELECT id FROM clients WHERE id = ?').get(body.client_id)) throw new Error('Cliente não encontrado');
           } catch (error) { return json(400, { error: error instanceof SyntaxError ? 'JSON inválido' : error.message }); }
           const fields = resources[resource];
+          if (editingService) {
+            db.prepare('UPDATE services SET name = ?, price = ? WHERE id = ?').run(body.name, body.price, Number(id));
+            return json(200, db.prepare('SELECT * FROM services WHERE id = ?').get(Number(id)));
+          }
           const result = db.prepare(`INSERT INTO ${resource} (${fields.join(',')}) VALUES (${fields.map(() => '?').join(',')})`).run(...fields.map(key => body[key]));
           return json(201, db.prepare(`SELECT * FROM ${resource} WHERE id = ?`).get(Number(result.lastInsertRowid)));
         }

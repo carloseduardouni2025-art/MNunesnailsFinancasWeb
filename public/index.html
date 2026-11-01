@@ -24,6 +24,10 @@
     <div class="topbar"><span>Seu salão, bem organizado.</span><span class="profile">♙ &nbsp; Proprietário</span></div>
     <header><div><h1 id="page-title">Olá!</h1><p id="page-description">Veja o resumo financeiro do seu salão.</p></div><button class="primary" id="add-button">+ Novo lançamento</button></header>
     <div class="toolbar"><span id="period-label">Movimentação do mês</span><label>Mês <input type="month" id="month-filter"></label></div>
+    <section id="record-filters" class="record-filters" aria-label="Filtros dos registros" hidden>
+      <label>Buscar registro<input id="record-search" type="search" placeholder="Descrição, categoria ou cliente"></label>
+      <label>Tipo<select id="record-type"><option value="">Todos</option><option value="income">Receitas</option><option value="expense">Despesas</option></select></label>
+    </section>
     <p id="notice" role="status" aria-live="polite" hidden></p>
     <section id="content" aria-label="Conteúdo principal"><p>Carregando seus dados…</p></section>
     <footer>MNunes Nails <span>Organização que valoriza o seu trabalho.</span></footer>

@@ -1,6 +1,6 @@
 # MNunes Nails · Finanças
 
-Base da Sprint 1 para a aplicação de gestão financeira do salão.
+Aplicação de gestão financeira do salão, com a base da Sprint 1 e as operações do MVP da Sprint 2.
 
 ## Executar
 
@@ -24,6 +24,17 @@ Abra http://127.0.0.1:3000. Para desenvolvimento com reinício automático do se
 
 O banco inicia vazio, sem valores fictícios. Valores monetários são armazenados em centavos. Ao excluir um cliente, seus lançamentos são preservados e o vínculo é removido. O saldo exibido é o saldo do mês selecionado, não o saldo bancário acumulado.
 
+## Sprint 2 — Funcionalidades do MVP
+
+- Cadastro, edição de nome/preço e exclusão de serviços na interface e na API.
+- Registro de receitas com seleção opcional de serviço, preenchendo descrição e valor; os campos podem ser ajustados antes de salvar.
+- Consulta dos registros por mês, tipo (receita/despesa) e busca por descrição, categoria ou cliente.
+- Histórico financeiro preservado: nome e valor são copiados no lançamento; editar ou excluir o serviço não altera receitas anteriores.
+- Atualização da interface após salvar, com aviso específico se a gravação funcionar e a atualização da lista falhar.
+- Teste integrado cobrindo edição válida/inválida, serviço inexistente, registro de receita e preservação do histórico após edição, exclusão e reabertura do banco.
+
+Para editar: abra **Serviços → Editar**, altere nome ou preço e salve. Para registrar uma receita: abra **Novo lançamento**, selecione um serviço ou preencha manualmente, confira valor/data e salve. Consulte em **Receitas e despesas**, usando os filtros. O filtro de mês vazio inclui todos os meses.
+
 ## Estrutura
 
 ```text
@@ -43,6 +54,8 @@ data/financas.sqlite Banco local (ignorado pelo Git)
 | Lançamentos | `/api/transactions` | `/api/transactions` | `/api/transactions/:id` |
 
 Corpos JSON:
+
+A edição de serviços usa `PUT /api/services/:id` com o corpo completo `{ "name": "Manicure", "price": 5500 }`. Retorna 200 quando salva, 400 para dados inválidos e 404 quando o serviço não existe.
 
 ```json
 {"name":"Ana","phone":"11999999999"}
@@ -68,4 +81,4 @@ npm test
 
 `PORT` altera a porta (padrão `3000`); `DATABASE_PATH` altera o caminho do SQLite. Para backup, pare o servidor e copie o arquivo do banco. O SQLite utiliza WAL durante a execução.
 
-Esta base é destinada a uso local e escuta somente em `127.0.0.1`. Autenticação, edição de registros, agenda de atendimentos, relatórios e implantação em produção não estão incluídos nesta Sprint. Antes de disponibilizar na internet, é necessário implementar autenticação e controle de acesso.
+Esta base escuta somente em `127.0.0.1`. A edição está disponível para serviços; edição de clientes e lançamentos, autenticação, agenda e relatórios adicionais não estão incluídos nesta entrega. O uso de túnel externo não adiciona autenticação: antes de disponibilizar dados reais na internet, é necessário implementar controle de acesso.

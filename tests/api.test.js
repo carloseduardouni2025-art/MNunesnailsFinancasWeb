@@ -50,3 +50,49 @@ test('SQLite mantém os registros ao reabrir o banco', () => {
     assert.equal(db.prepare('PRAGMA user_version').get().user_version, 1);
   } finally { db?.close(); rmSync(directory, { recursive: true }); }
 });
+
+test('Sprint 2: editar serviço, registrar receita e preservar histórico após edição e exclusão', async () => {
+  const directory = mkdtempSync(join(tmpdir(), 'mnunes-sprint2-'));
+  const path = join(directory, 'test.sqlite');
+  let db = openDatabase(path);
+  const server = createApp(db).listen(0, '127.0.0.1');
+  await once(server, 'listening');
+  const base = `http://127.0.0.1:${server.address().port}/api`;
+  const request = (route, method = 'GET', body) => fetch(base + route, {
+    method, headers: { 'Content-Type': 'application/json' },
+    body: body === undefined ? undefined : JSON.stringify(body),
+  });
+  try {
+    const created = await request('/services', 'POST', { name: 'Manicure', price: 4500 });
+    assert.equal(created.status, 201);
+    const service = await created.json();
+    const edited = await request(`/services/${service.id}`, 'PUT', { name: 'Manicure completa', price: 5500 });
+    assert.equal(edited.status, 200);
+    assert.equal((await edited.json()).price, 5500);
+    for (const body of [{ name: '', price: 100 }, { name: 'Teste', price: -1 }, { name: 'Teste', price: 1.2 }, { name: 'Teste' }]) {
+      assert.equal((await request(`/services/${service.id}`, 'PUT', body)).status, 400);
+    }
+    assert.equal((await request('/services/99999', 'PUT', { name: 'Teste', price: 100 })).status, 404);
+    const services = await (await request('/services')).json();
+    assert.equal(services[0].name, 'Manicure completa');
+    assert.equal(services[0].price, 5500);
+    const receipt = await request('/transactions', 'POST', {
+      description: services[0].name, type: 'income', amount: services[0].price,
+      date: '2026-11-01', category: 'Atendimento',
+    });
+    assert.equal(receipt.status, 201);
+    assert.equal((await request(`/services/${service.id}`, 'PUT', { name: 'Novo nome', price: 6500 })).status, 200);
+    assert.equal((await request(`/services/${service.id}`, 'DELETE')).status, 200);
+    const receipts = await (await request('/transactions')).json();
+    assert.equal(receipts.length, 1);
+    assert.equal(receipts[0].amount, 5500);
+    assert.equal(receipts[0].description, 'Manicure completa');
+    assert.equal((await (await request('/services')).json()).length, 0);
+    await new Promise(resolve => server.close(resolve));
+    db.close(); db = openDatabase(path);
+    assert.equal(db.prepare('SELECT amount FROM transactions').get().amount, 5500);
+  } finally {
+    if (server.listening) await new Promise(resolve => server.close(resolve));
+    db.close(); rmSync(directory, { recursive: true });
+  }
+});

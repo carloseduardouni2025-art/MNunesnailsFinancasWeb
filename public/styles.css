@@ -79,3 +79,10 @@ input[type=number] { touch-action: manipulation; }
   .cell-value { min-width: 0; overflow-wrap: anywhere; text-align: right; }
   .cell-value small { display: inline-block; margin-top: 5px; }
 }
+
+/* Sprint 2: consulta e edição. */
+.row-actions { display: inline-flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.row-actions button { min-height: 44px; padding: 8px 12px; font-size: 13px; }
+.record-filters { display: flex; flex-wrap: wrap; gap: 16px; margin: 20px 0; }
+.record-filters label { display: grid; gap: 8px; font-size: 13px; flex: 1; min-width: 160px; }
+@media (max-width: 700px) { .record-filters { flex-direction: column; } }
